@@ -1,0 +1,12 @@
+# Build artifacts
+*.o
+*.elf
+*.bin
+*.toc
+*.cdi
+
+
+# IDE
+.vscode/
+.idea/
+compile_commands.json
