@@ -13,18 +13,16 @@ A turn-based roguelike for the Sega Dreamcast. Ten floors of procedurally genera
 
 ## Building
 
+I haven't tried on other computers or Windows so don't expect the build.sh to just work. 
+
 ```bash
 ./build.sh          # build roguelike.elf (run in emulator)
-./build.sh dist     # strip and produce 1ST_READ.BIN for real hardware
+./build.sh dist     # strip and produce 1ST_READ.BIN
 ./build.sh cdi      # build a burnable CDI image
 ./build.sh clean    # remove build artifacts
 ```
 
-To burn a CDI to disc:
-
-```bash
-cd ~/dcdib && sudo ./dcdib /path/to/roguelike.cdi
-```
+To make it work on real hardware, burn the CDI file to a CD-R disk.
 
 ---
 
@@ -66,6 +64,15 @@ python3 tools/gen_font.py       # writes assets/font.raw
 WAV files must be mono, 16-bit PCM, 22050 Hz to load correctly on KOS.
 
 ---
+
+---
+
+## Disclaimer
+
+This is my first real Dreamcast project so expect some bugs.
+
+---
+
 
 ## License
 
