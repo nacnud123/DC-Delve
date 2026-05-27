@@ -75,3 +75,7 @@ This is my first real Dreamcast project so expect some bugs.
 ## License
 
 Do whatever you want with it. Creddit me though.
+
+<img width="2050" height="1166" alt="1" src="https://github.com/user-attachments/assets/c3da09e7-8601-429c-af0b-0ccbd21b5e84" />
+<img width="2050" height="1166" alt="2" src="https://github.com/user-attachments/assets/01f0d4ba-93fc-4a4e-a553-df12e56967c2" />
+<img width="2050" height="1166" alt="3" src="https://github.com/user-attachments/assets/53008bfb-10c2-4350-b050-5b08128f945d" />
