@@ -55,15 +55,13 @@ Descend through ten floors using the `>` stairs. Enemies move whenever you do. R
 
 ## Asset generation
 
-The font atlas and hit sound are pre-built and committed. If you need to regenerate them:
+The font atlas is pre-built and committed. If you need to regenerate them:
 
 ```bash
 python3 tools/gen_font.py       # writes assets/font.raw
 ```
 
 WAV files must be mono, 16-bit PCM, 22050 Hz to load correctly on KOS.
-
----
 
 ---
 
