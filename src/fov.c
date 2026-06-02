@@ -3,7 +3,7 @@
 
 /* Recursive shadowcasting FOV (Bjorn Bergstrom's algorithm) */
 
-static Dungeon *g_dungeon;
+static Dungeon* g_dungeon;
 static int g_ox, g_oy, g_radius;
 
 static int blocks_light(int x, int y)
@@ -88,7 +88,7 @@ static void cast_light(int row, float start_slope, float end_slope, int xx, int 
     }
 }
 
-void fov_compute(Dungeon *d, int ox, int oy, int radius)
+void fov_compute(Dungeon* d, int ox, int oy, int radius)
 {
     memset(d->visible, 0, sizeof(d->visible));
     g_dungeon = d;

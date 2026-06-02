@@ -27,13 +27,14 @@ static pvr_poly_hdr_t fg_hdr; /* transparent, textured, vertex-colored */
 void console_init(void)
 {
     font_tex = pvr_mem_malloc(FONT_ATLAS_W * FONT_ATLAS_H * 2);
-    pvr_txr_load((void *)font_atlas_data, font_tex, FONT_ATLAS_W * FONT_ATLAS_H * 2);
+    pvr_txr_load((void*)font_atlas_data, font_tex, FONT_ATLAS_W * FONT_ATLAS_H * 2);
 
     pvr_poly_cxt_t cxt;
     pvr_poly_cxt_col(&cxt, PVR_LIST_OP_POLY);
     pvr_poly_compile(&bg_hdr, &cxt);
 
-    pvr_poly_cxt_txr(&cxt, PVR_LIST_TR_POLY, PVR_TXRFMT_ARGB4444 | PVR_TXRFMT_NONTWIDDLED, FONT_ATLAS_W, FONT_ATLAS_H, font_tex, PVR_FILTER_NEAREST);
+    pvr_poly_cxt_txr(&cxt, PVR_LIST_TR_POLY, PVR_TXRFMT_ARGB4444 | PVR_TXRFMT_NONTWIDDLED, FONT_ATLAS_W, FONT_ATLAS_H,
+                     font_tex, PVR_FILTER_NEAREST);
     cxt.blend.src = PVR_BLEND_SRCALPHA;
     cxt.blend.dst = PVR_BLEND_INVSRCALPHA;
     pvr_poly_compile(&fg_hdr, &cxt);
@@ -69,7 +70,7 @@ void console_put(int x, int y, uint8_t ch, uint32_t fg, uint32_t bg)
     grid[y][x].bg = bg;
 }
 
-void console_print(int x, int y, const char *s, uint32_t fg, uint32_t bg)
+void console_print(int x, int y, const char* s, uint32_t fg, uint32_t bg)
 {
     for (; *s && x < CON_W; s++, x++)
     {
@@ -77,7 +78,7 @@ void console_print(int x, int y, const char *s, uint32_t fg, uint32_t bg)
     }
 }
 
-void console_printf(int x, int y, uint32_t fg, uint32_t bg, const char *fmt, ...)
+void console_printf(int x, int y, uint32_t fg, uint32_t bg, const char* fmt, ...)
 {
     char buf[128];
     va_list ap;
@@ -126,14 +127,17 @@ static inline float glyph_u0(uint8_t ch)
 {
     return (ch % FONT_COLS) * (1.0f / FONT_COLS);
 }
+
 static inline float glyph_v0(uint8_t ch)
 {
     return (ch / FONT_COLS) * (1.0f / FONT_ROWS);
 }
+
 static inline float glyph_u1(uint8_t ch)
 {
     return glyph_u0(ch) + (1.0f / FONT_COLS);
 }
+
 static inline float glyph_v1(uint8_t ch)
 {
     return glyph_v0(ch) + (1.0f / FONT_ROWS);
@@ -180,7 +184,8 @@ static void emit_quad_col(float x0, float y0, float x1, float y1, float z, uint3
     pvr_prim(&v[3], sizeof(pvr_vertex_t));
 }
 
-static void emit_quad_txr(float x0, float y0, float x1, float y1, float z, float u0, float v0, float u1, float v1, uint32_t col)
+static void emit_quad_txr(float x0, float y0, float x1, float y1, float z, float u0, float v0, float u1, float v1,
+                          uint32_t col)
 {
     pvr_vertex_t v[4];
     v[0].flags = PVR_CMD_VERTEX;
@@ -232,7 +237,8 @@ void console_render(void)
     {
         for (int x = 0; x < CON_W; x++)
         {
-            float sx = x * CELL_W, sy = y * CELL_H;
+            /* +0.5f aligns quads to pixel centres on the PVR rasteriser */
+            float sx = x * CELL_W + 0.5f, sy = y * CELL_H + 0.5f;
             emit_quad_col(sx, sy, sx + CELL_W, sy + CELL_H, 1.0f, grid[y][x].bg);
         }
     }
@@ -247,8 +253,9 @@ void console_render(void)
             uint8_t ch = grid[y][x].ch;
             if (ch == ' ')
                 continue;
-            float sx = x * CELL_W, sy = y * CELL_H;
-            emit_quad_txr(sx, sy, sx + CELL_W, sy + CELL_H, 2.0f, glyph_u0(ch), glyph_v0(ch), glyph_u1(ch), glyph_v1(ch), grid[y][x].fg);
+            float sx = x * CELL_W + 0.5f, sy = y * CELL_H + 0.5f;
+            emit_quad_txr(sx, sy, sx + CELL_W, sy + CELL_H, 2.0f, glyph_u0(ch), glyph_v0(ch), glyph_u1(ch),
+                          glyph_v1(ch), grid[y][x].fg);
         }
     }
     pvr_list_finish();

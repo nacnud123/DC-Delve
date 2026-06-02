@@ -28,7 +28,8 @@
 #define COL_PANEL_BG 0xFF09090F
 #define COL_GOLD 0xFFCC9922
 
-typedef struct {
+typedef struct
+{
     uint8_t ch;
     uint32_t fg;
     uint32_t bg;
@@ -38,8 +39,8 @@ void console_init(void);
 void console_shutdown(void);
 void console_clear(void);
 void console_put(int x, int y, uint8_t ch, uint32_t fg, uint32_t bg);
-void console_print(int x, int y, const char *s, uint32_t fg, uint32_t bg);
-void console_printf(int x, int y, uint32_t fg, uint32_t bg, const char *fmt, ...);
+void console_print(int x, int y, const char* s, uint32_t fg, uint32_t bg);
+void console_printf(int x, int y, uint32_t fg, uint32_t bg, const char* fmt, ...);
 void console_hline(int x, int y, int w, uint8_t ch, uint32_t fg, uint32_t bg);
 void console_vline(int x, int y, int h, uint8_t ch, uint32_t fg, uint32_t bg);
 void console_border(int x, int y, int w, int h, uint32_t fg, uint32_t bg);

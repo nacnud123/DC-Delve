@@ -14,7 +14,8 @@ int main(void)
     console_init();
 
     GameState game;
-    game_init(&game);
+    unsigned int frame = 0;
+    game_init(&game, frame);
 
     uint32_t prev_buttons = 0;
     uint8_t prev_rtrig = 0;
@@ -24,14 +25,14 @@ int main(void)
 
     while (running)
     {
-        maple_device_t *dev = maple_enum_type(0, MAPLE_FUNC_CONTROLLER);
+        maple_device_t* dev = maple_enum_type(0, MAPLE_FUNC_CONTROLLER);
 
         uint32_t b = 0;
         uint8_t rtrig = 0;
 
         if (dev)
         {
-            cont_state_t *st = (cont_state_t *)maple_dev_status(dev);
+            cont_state_t* st = (cont_state_t*)maple_dev_status(dev);
             if (st)
             {
                 b = st->buttons;
@@ -57,31 +58,34 @@ int main(void)
         }
         int do_dir = dir && (move_repeat == 0 || move_repeat > 12);
 
-        if (game.screen == SCREEN_PLAY)
+        /* Helper: extract dx/dy from d-pad */
+        int dx = 0, dy = 0;
+        if (do_dir)
+        {
+            if (b & CONT_DPAD_LEFT)
+                dx = -1;
+
+            if (b & CONT_DPAD_RIGHT)
+                dx = 1;
+
+            if (b & CONT_DPAD_UP)
+                dy = -1;
+
+            if (b & CONT_DPAD_DOWN)
+                dy = 1;
+        }
+
+        if (game.screen == SCREEN_TITLE)
+        {
+            if (pressed & CONT_START)
+            {
+                game_start(&game);
+            }
+        }
+        else if (game.screen == SCREEN_PLAY)
         {
             if (do_dir)
             {
-                int dx = 0, dy = 0;
-                if (b & CONT_DPAD_LEFT)
-                {
-                    dx = -1;
-                }
-
-                if (b & CONT_DPAD_RIGHT)
-                {
-                    dx = 1;
-                }
-
-                if (b & CONT_DPAD_UP)
-                {
-                    dy = -1;
-                }
-
-                if (b & CONT_DPAD_DOWN)
-                {
-                    dy = 1;
-                }
-
                 int acted = game_player_move(&game, dx, dy);
                 if (acted && game.screen == SCREEN_PLAY)
                 {
@@ -94,95 +98,82 @@ int main(void)
                 }
             }
             if (pressed & CONT_A)
-            {
                 game_player_pickup(&game);
-            }
+
             if (pressed & CONT_B)
-            {
                 game_open_inventory(&game);
-            }
+
             if (r_pressed)
-            {
                 game_player_use_stairs(&game);
-            }
+
+            if (pressed & CONT_START)
+                game_open_pause(&game);
         }
         else if (game.screen == SCREEN_INVENTORY)
         {
             if (pressed & CONT_DPAD_UP)
-            {
                 game_inventory_cursor(&game, -1);
-            }
 
             if (pressed & CONT_DPAD_DOWN)
-            {
                 game_inventory_cursor(&game, 1);
-            }
 
             if (pressed & CONT_A)
-            {
                 game_inventory_use(&game);
-            }
 
             if (pressed & CONT_X)
-            {
                 game_inventory_drop(&game);
-            }
 
             if (pressed & CONT_B)
-            {
                 game_inventory_close(&game);
-            }
+
+            if (pressed & CONT_START)
+                game_open_pause(&game);
         }
         else if (game.screen == SCREEN_TARGET)
         {
             if (do_dir)
-            {
-                int dx = 0, dy = 0;
-                if (b & CONT_DPAD_LEFT)
-                {
-                    dx = -1;
-                }
-
-                if (b & CONT_DPAD_RIGHT)
-                {
-                    dx = 1;
-                }
-
-                if (b & CONT_DPAD_UP)
-                {
-                    dy = -1;
-                }
-
-                if (b & CONT_DPAD_DOWN)
-                {
-                    dy = 1;
-                }
                 game_target_move(&game, dx, dy);
-            }
+
             if (pressed & CONT_A)
-            {
                 game_target_confirm(&game);
-            }
 
             if (pressed & CONT_B)
-            {
                 game_target_cancel(&game);
-            }
         }
-
-        if (pressed & CONT_START)
+        else if (game.screen == SCREEN_PAUSE)
         {
-            if (game.screen == SCREEN_DEAD || game.screen == SCREEN_VICTORY)
-            {
-                game_init(&game);
-            }
-            else
-            {
-                running = 0;
-            }
+            if (pressed & CONT_DPAD_UP)
+                game_pause_cursor(&game, -1);
+
+            if (pressed & CONT_DPAD_DOWN)
+                game_pause_cursor(&game, 1);
+
+            if (pressed & CONT_A)
+                game_pause_confirm(&game);
+
+            if (pressed & CONT_B)
+                game_pause_back(&game);
+
+            if (pressed & CONT_START)
+                game_pause_back(&game);
+        }
+        else if (game.screen == SCREEN_CONTROLS)
+        {
+            if (pressed & CONT_B)
+                game_pause_back(&game);
+
+            if (pressed & CONT_START)
+                game_pause_back(&game);
+        }
+        else if (game.screen == SCREEN_DEAD || game.screen == SCREEN_VICTORY)
+        {
+            if (pressed & CONT_START)
+                game_init(&game, frame);
         }
 
+        game.frame = frame;
         game_render(&game);
+        frame++;
     }
 
     console_shutdown();
